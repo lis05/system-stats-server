@@ -19,7 +19,10 @@ class Server:
         self.data["cpu_freq"]=psutil.cpu_freq().current
         
     def worker_cpu_temp(self):
-        self.data["cpu_temp"]=psutil.sensors_temperatures()["acpitz"][0].current
+        try:
+            self.data["cpu_temp"]=psutil.sensors_temperatures()["acpitz"][0].current
+        except:
+            self.data["cpu_temp"]=99
 
     def worker_used_memory(self):
         self.data["used_memory"]=psutil.virtual_memory().used
