@@ -1,0 +1,12 @@
+[Unit]
+Description=system-stats-server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=USERNAME
+ExecStart=python3 /home/USERNAME/software/system-stats-server/server.py
+
+[Install]
+WantedBy=multi-user.target
