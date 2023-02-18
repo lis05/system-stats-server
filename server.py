@@ -5,6 +5,7 @@ import sys
 import time
 import json
 from pid import PidFile
+import subprocess
 
 SHORT=0.5
 
@@ -69,9 +70,16 @@ class Server:
         self.data["network_recv_per_second"]=int((recv-last_recv)/(cur_time-last_time))
         self.data["network_sent_per_second"]=int((sent-last_sent)/(cur_time-last_time))
     
-    def server(self):
-        while True:
-            pass    
+    def worker_battery(self):
+        data=psutil.sensors_battery()
+        self.data["battery_percentage"]=data.percent
+        self.data["battery_left"]=1e18 if data.percent>=99.9 else data.secsleft
+        self.data["battery_charging"]=data.power_plugged
+    
+    def worker_system(self):
+        self.data["kernel"]=subprocess.getoutput("uname -r")
+        self.data["uptime"]=time.time()-psutil.boot_time()
+
         
     def work(self):
         while True:
@@ -82,6 +90,8 @@ class Server:
             self.worker_used_swap()
             self.worker_disks_io()
             self.worker_network_io()
+            self.worker_battery()
+            self.worker_system()
 
             with open("/tmp/system-stats-server-data.json",'w') as f:
                 f.write(json.dumps(self.data))
