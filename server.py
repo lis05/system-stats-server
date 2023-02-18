@@ -32,6 +32,9 @@ class Server:
         self.data["used_swap"]=psutil.swap_memory().used
         
     def worker_disks_io(self):
+        data=psutil.disk_usage("/")
+        self.data["disks_used"]=data.used
+        self.data["disks_total"]=data.total
         data=psutil.disk_io_counters(perdisk=False)
         try:
             last_time=self.data["disks_time"]
